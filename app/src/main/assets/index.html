@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Fortnite News Pro</title>
+<style>
+  :root {
+    --bg: #070A12;
+    --surface: #0F1626;
+    --surface-2: #162036;
+    --border: rgba(148, 163, 184, 0.12);
+    --primary: #3B82F6;
+    --purple: #8B5CF6;
+    --gold: #F59E0B;
+    --green: #10B981;
+    --red: #EF4444;
+    --text: #F8FAFC;
+    --muted: #94A3B8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; font-family: system-ui, -apple-system, sans-serif; }
+  body { background: var(--bg); color: var(--text); padding-bottom: 88px; overflow-x: hidden; user-select: none; }
+
+  /* Header */
+  .app-header {
+    position: sticky; top: 0; z-index: 90;
+    background: rgba(7, 10, 18, 0.88); backdrop-filter: blur(14px);
+    padding: 14px 16px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--primary), var(--purple));
+    display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 18px;
+    box-shadow: 0 4px 15px rgba(59,130,246,0.4);
+  }
+  .brand-title { font-size: 17px; font-weight: 900; letter-spacing: 0.3px; }
+  .brand-sub { font-size: 11px; color: var(--muted); }
+  .status-pills { display: flex; gap: 6px; align-items: center; }
+  .pill {
+    font-size: 10px; font-weight: 800; padding: 4px 9px; border-radius: 99px;
+    background: var(--surface-2); border: 1px solid var(--border); color: var(--muted);
+  }
+  .pill.root-on { background: rgba(16, 185, 129, 0.15); color: #34D399; border-color: rgba(16, 185, 129, 0.35); }
+  .pill.root-off { background: rgba(239, 68, 68, 0.15); color: #F87171; border-color: rgba(239, 68, 68, 0.35); }
+
+  /* Search & Filter Bar */
+  .search-wrap { padding: 12px 16px 4px; }
+  .search-box {
+    width: 100%; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 11px 14px; color: var(--text); font-size: 14px; outline: none;
+  }
+  .search-box:focus { border-color: var(--primary); }
+
+  .chips { display: flex; gap: 8px; padding: 10px 16px; overflow-x: auto; scrollbar-width: none; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip {
+    padding: 8px 15px; border-radius: 12px; background: var(--surface); border: 1px solid var(--border);
+    color: var(--muted); font-size: 13px; font-weight: 700; white-space: nowrap; transition: 0.2s;
+  }
+  .chip.active {
+    background: linear-gradient(135deg, var(--primary), var(--purple));
+    color: #fff; border-color: transparent; box-shadow: 0 4px 14px rgba(59,130,246,0.35);
+  }
+
+  /* Views */
+  .view { display: none; padding: 8px 16px; animation: fadeIn 0.25s ease; }
+  .view.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* News Cards */
+  .news-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 18px;
+    overflow: hidden; margin-bottom: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    transition: transform 0.15s;
+  }
+  .news-card:active { transform: scale(0.985); }
+  .news-img-wrap { position: relative; width: 100%; height: 195px; background: var(--surface-2); }
+  .news-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .news-tag {
+    position: absolute; top: 12px; right: 12px;
+    background: rgba(7, 10, 18, 0.8); backdrop-filter: blur(6px);
+    color: #60A5FA; border: 1px solid rgba(96,165,250,0.3);
+    padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 800;
+  }
+  .news-body { padding: 15px; }
+  .news-title { font-size: 17px; font-weight: 800; line-height: 1.4; margin-bottom: 6px; }
+  .news-desc { font-size: 13px; color: var(--muted); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .news-actions {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border);
+  }
+  .btn-sm {
+    background: var(--surface-2); border: 1px solid var(--border); color: var(--text);
+    padding: 7px 12px; border-radius: 10px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 5px;
+  }
+  .btn-sm.saved { background: rgba(245, 158, 11, 0.18); color: var(--gold); border-color: rgba(245, 158, 11, 0.4); }
+
+  /* Shop Grid */
+  .shop-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .shop-item {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+    overflow: hidden; text-align: center; padding-bottom: 12px;
+  }
+  .shop-item img { width: 100%; height: 150px; object-fit: cover; background: radial-gradient(circle, #1e293b, #0f172a); }
+  .shop-name { font-size: 14px; font-weight: 800; margin: 8px 8px 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .shop-price { font-size: 12px; color: var(--gold); font-weight: 800; }
+
+  /* Map Card */
+  .map-card { background: var(--surface); border-radius: 18px; padding: 14px; border: 1px solid var(--border); text-align: center; }
+  .map-card img { width: 100%; border-radius: 12px; margin-top: 10px; }
+
+  /* Settings Suite */
+  .settings-group {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 18px;
+    padding: 6px 14px; margin-bottom: 16px;
+  }
+  .settings-header {
+    font-size: 12px; font-weight: 800; color: var(--primary); margin: 14px 4px 8px; letter-spacing: 0.5px;
+  }
+  .setting-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 0; border-bottom: 1px solid var(--border);
+  }
+  .setting-row:last-child { border-bottom: none; }
+  .setting-info h4 { font-size: 14px; font-weight: 700; }
+  .setting-info p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* Toggle Switch */
+  .switch { position: relative; display: inline-block; width: 46px; height: 26px; flex-shrink: 0; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider {
+    position: absolute; cursor: pointer; inset: 0; background-color: #1E293B;
+    transition: .3s; border-radius: 34px; border: 1px solid var(--border);
+  }
+  .slider:before {
+    position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+    background-color: white; transition: .3s; border-radius: 50%;
+  }
+  input:checked + .slider { background-color: var(--primary); }
+  input:checked + .slider:before { transform: translateX(20px); }
+
+  .action-btn {
+    width: 100%; padding: 13px; border-radius: 12px; border: none; font-size: 14px; font-weight: 800;
+    color: #fff; margin-bottom: 10px; cursor: pointer;
+  }
+  .btn-blue { background: linear-gradient(135deg, var(--primary), var(--purple)); }
+  .btn-gold { background: linear-gradient(135deg, #D97706, #F59E0B); color: #070A12; }
+  .btn-dark { background: var(--surface-2); border: 1px solid var(--border); }
+
+  /* Article Modal */
+  .modal {
+    position: fixed; inset: 0; z-index: 200; background: rgba(3, 5, 10, 0.92);
+    backdrop-filter: blur(10px); display: none; flex-direction: column; overflow-y: auto;
+  }
+  .modal.open { display: flex; }
+  .modal-img { width: 100%; height: 250px; object-fit: cover; }
+  .modal-content { padding: 20px; }
+  .modal-close {
+    position: fixed; top: 16px; left: 16px; width: 38px; height: 38px; border-radius: 50%;
+    background: rgba(15, 22, 38, 0.85); border: 1px solid var(--border); color: #fff;
+    font-size: 18px; font-weight: bold; z-index: 210;
+  }
+
+  /* Bottom Navigation */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(15, 22, 38, 0.94); backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border); display: flex; justify-content: space-around;
+    padding: 10px 6px 14px;
+  }
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    color: var(--muted); font-size: 11px; font-weight: 700; flex: 1;
+  }
+  .nav-item.active { color: #60A5FA; }
+  .nav-icon { font-size: 19px; }
+
+  .skeleton {
+    height: 220px; border-radius: 18px; margin-bottom: 16px;
+    background: linear-gradient(90deg, var(--surface) 25%, var(--surface-2) 50%, var(--surface) 75%);
+    background-size: 200% 100%; animation: shimmer 1.4s infinite;
+  }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+</style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-icon">F</div>
+      <div>
+        <div class="brand-title">FORTNITE PRO</div>
+        <div class="brand-sub" id="serverStatusText">متصل بالسيرفر المباشر</div>
+      </div>
+    </div>
+    <div class="status-pills">
+      <span class="pill root-off" id="rootStatusPill">ROOT: فحص</span>
+    </div>
+  </header>
+
+  <!-- VIEW 1: NEWS -->
+  <section id="view-news" class="view active">
+    <div class="search-wrap">
+      <input type="text" class="search-box" id="searchInput" placeholder="ابحث في أخبار وتحديثات فورت نايت..." oninput="filterNews()">
+    </div>
+    <div class="chips">
+      <div class="chip active" onclick="switchNewsCategory('br', this)">باتل رويال</div>
+      <div class="chip" onclick="switchNewsCategory('creative', this)">طور الإبداعي</div>
+      <div class="chip" onclick="switchNewsCategory('stw', this)">طور الزومبي</div>
+    </div>
+    <div id="newsList">
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
+    </div>
+  </section>
+
+  <!-- VIEW 2: ITEM SHOP -->
+  <section id="view-shop" class="view">
+    <div style="padding: 10px 4px 14px; display:flex; justify-content:space-between; align-items:center;">
+      <h3 style="font-size:17px; font-weight:900;">متجر العناصر اليومي</h3>
+      <span class="pill" style="color:#F59E0B;">تحديث تلقائي</span>
+    </div>
+    <div class="shop-grid" id="shopGrid">
+      <div class="skeleton" style="height:180px;"></div>
+      <div class="skeleton" style="height:180px;"></div>
+    </div>
+  </section>
+
+  <!-- VIEW 3: LIVE MAP -->
+  <section id="view-map" class="view">
+    <div class="map-card">
+      <h3 style="font-size:17px; font-weight:900;">خريطة الجزيرة الحالية</h3>
+      <p style="font-size:12px; color:var(--muted); margin-top:4px;">محدثة مباشرة بأحدث التغييرات والمناطق</p>
+      <img id="fortniteMapImg" src="https://fortnite-api.com/images/map_ar.png" onerror="this.src='https://fortnite-api.com/images/map.png'" alt="Fortnite Map">
+    </div>
+  </section>
+
+  <!-- VIEW 4: SAVED BOOKMARKS -->
+  <section id="view-saved" class="view">
+    <div style="padding: 10px 4px 14px;">
+      <h3 style="font-size:17px; font-weight:900;">الأخبار المحفوظة</h3>
+      <p style="font-size:12px; color:var(--muted); margin-top:2px;">تعمل حتى بدون اتصال بالإنترنت</p>
+    </div>
+    <div id="savedList"></div>
+  </section>
+
+  <!-- VIEW 5: MASSIVE SETTINGS SUITE -->
+  <section id="view-settings" class="view">
+    <div class="settings-header">⚡ صلاحيات الروت والأداء (Magisk / KernelSU)</div>
+    <div class="settings-group">
+      <div class="setting-row">
+        <div class="setting-info">
+          <h4>حالة صلاحيات المستخدم الخارق</h4>
+          <p id="rootDetailText">بانتظار فحص Magisk...</p>
+        </div>
+        <span class="pill root-off" id="settingsRootBadge">غير مفعل</span>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <h4>طلب الروت تلقائياً عند التشغيل</h4>
+          <p>إرسال طلب su فور الدخول للتطبيق</p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="toggleAutoRoot" checked onchange="togglePref('auto_root', this.checked)">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div style="padding: 12px 0 6px;">
+        <button class="action-btn btn-blue" onclick="nativeCall('triggerRoot')">طلب / إعادة فحص صلاحيات Magisk</button>
+        <button class="action-btn btn-gold" onclick="nativeCall('runRootBoost')">🚀 تنظيف الرام وتسريع الجهاز بالروت</button>
+      </div>
+    </div>
+
+    <div class="settings-header">🌍 إعدادات المحتوى واللغة</div>
+    <div class="settings-group">
+      <div class="setting-row">
+        <div class="setting-info">
+          <h4>لغة أخبار فورت نايت</h4>
+          <p>تبديل لغة جلب البيانات من السيرفر</p>
+        </div>
+        <select id="langSelect" onchange="changeLanguage(this.value)" style="background:var(--surface-2); color:#fff; border:1px solid var(--border); padding:8px 12px; border-radius:10px; font-weight:bold;">
+          <option value="ar">العربية (AR)</option>
+          <option value="en">English (EN)</option>
+        </select>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <h4>جودة الصور الفائقة (HD)</h4>
+          <p>تحميل صور الأخبار والمتجر بأعلى دقة</p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="toggleHQ" checked onchange="togglePref('high_quality', this.checked)">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="settings-header">📱 التفاعل والنظام</div>
+    <div class="settings-group">
+      <div class="setting-row">
+        <div class="setting-info">
+          <h4>الاهتزاز التفاعلي (Haptic Feedback)</h4>
+          <p>اهتزاز خفيف عند لمس الأزرار والتبويبات</p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="toggleHaptics" checked onchange="togglePref('haptics', this.checked)">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <h4>معلومات الجهاز</h4>
+          <p id="deviceInfoText">Android Device</p>
+        </div>
+        <span class="pill">v2.0 Pro</span>
+      </div>
+      <div style="padding: 12px 0 6px;">
+        <button class="action-btn btn-dark" onclick="nativeCall('clearAppCache')">🧹 مسح الذاكرة المؤقتة (Cache)</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Full Article Modal -->
+  <div class="modal" id="articleModal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <img class="modal-img" id="modalImg" src="" alt="">
+    <div class="modal-content">
+      <span class="pill" id="modalTag" style="color:#60A5FA; margin-bottom:10px; display:inline-block;">تحديث</span>
+      <h2 id="modalTitle" style="font-size:21px; font-weight:900; line-height:1.4; margin-bottom:12px;"></h2>
+      <p id="modalBody" style="font-size:15px; color:#CBD5E1; line-height:1.8; margin-bottom:24px;"></p>
+      <button class="action-btn btn-blue" id="modalShareBtn">مشاركة الخبر مع الأصدقاء</button>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <div class="nav-item active" onclick="switchTab('news', this)">
+      <span class="nav-icon">📰</span><span>الأخبار</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('shop', this)">
+      <span class="nav-icon">🛒</span><span>المتجر</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('map', this)">
+      <span class="nav-icon">🗺️</span><span>الخريطة</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('saved', this)">
+      <span class="nav-icon">🔖</span><span>المحفوظات</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('settings', this)">
+      <span class="nav-icon">⚙️</span><span>الإعدادات</span>
+    </div>
+  </nav>
+
+<script>
+  let currentLang = 'ar';
+  let currentCategory = 'br';
+  let allNewsItems = [];
+  let savedArticles = JSON.parse(localStorage.getItem('fn_saved_articles') || '[]');
+
+  function nativeCall(method, arg1, arg2) {
+    if (window.AndroidNative && typeof window.AndroidNative[method] === 'function') {
+      if (arg2 !== undefined) window.AndroidNative[method](arg1, arg2);
+      else if (arg1 !== undefined) window.AndroidNative[method](arg1);
+      else window.AndroidNative[method]();
+    }
+  }
+
+  function onNativeSync(state) {
+    const pill = document.getElementById('rootStatusPill');
+    const badge = document.getElementById('settingsRootBadge');
+    const detail = document.getElementById('rootDetailText');
+
+    if (state.isRooted) {
+      pill.innerText = 'ROOT: مفعّل';
+      pill.className = 'pill root-on';
+      badge.innerText = 'ممنوح (Magisk)';
+      badge.className = 'pill root-on';
+      detail.innerText = 'التطبيق يعمل بصلاحيات Superuser الكاملة';
+    } else {
+      pill.innerText = 'ROOT: عادي';
+      pill.className = 'pill root-off';
+      badge.innerText = 'غير ممنوح';
+      badge.className = 'pill root-off';
+      detail.innerText = 'اضغط بالأسفل لطلب الصلاحية من Magisk';
+    }
+
+    document.getElementById('toggleAutoRoot').checked = state.autoRoot;
+    document.getElementById('toggleHaptics').checked = state.haptics;
+    document.getElementById('toggleHQ').checked = state.highQuality;
+    document.getElementById('deviceInfoText').innerText = state.device;
+
+    if (state.lang && state.lang !== currentLang) {
+      currentLang = state.lang;
+      document.getElementById('langSelect').value = currentLang;
+      fetchNews();
+      fetchShop();
+    }
+  }
+
+  function togglePref(key, val) {
+    nativeCall('saveSetting', key, String(val));
+  }
+
+  function changeLanguage(lang) {
+    currentLang = lang;
+    nativeCall('saveSetting', 'lang', lang);
+    fetchNews();
+    fetchShop();
+  }
+
+  function switchTab(tabName, el) {
+    nativeCall('hapticTap');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + tabName).classList.add('active');
+
+    // تفعيل السحب للتحديث في تبويب الأخبار والمتجر فقط
+    nativeCall('setPullToRefreshEnabled', tabName === 'news' || tabName === 'shop');
+
+    if (tabName === 'saved') renderSaved();
+  }
+
+  function switchNewsCategory(cat, el) {
+    nativeCall('hapticTap');
+    currentCategory = cat;
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    fetchNews();
+  }
+
+  async function fetchNews() {
+    const list = document.getElementById('newsList');
+    list.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div>';
+    try {
+      const res = await fetch(`https://fortnite-api.com/v2/news?language=${currentLang}`);
+      const json = await res.json();
+      let items = [];
+      if (json.status === 200 && json.data) {
+        if (currentCategory === 'br' && json.data.br) items = json.data.br.motds || [];
+        else if (currentCategory === 'creative' && json.data.creative) items = json.data.creative.motds || [];
+        else if (currentCategory === 'stw' && json.data.stw) items = json.data.stw.messages || [];
+      }
+      allNewsItems = items;
+      renderNews(items);
+      document.getElementById('serverStatusText').innerText = 'محدث الآن • مباشر';
+    } catch (e) {
+      list.innerHTML = `<div class="news-card"><div class="news-body"><h3 class="news-title">تعذر الاتصال بالسيرفر</h3><p class="news-desc">تأكد من اتصالك بالإنترنت ثم اسحب الشاشة للأسفل للتحديث.</p></div></div>`;
+    }
+  }
+
+  function filterNews() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const filtered = allNewsItems.filter(i =>
+      (i.title && i.title.toLowerCase().includes(q)) ||
+      (i.body && i.body.toLowerCase().includes(q))
+    );
+    renderNews(filtered);
+  }
+
+  function renderNews(items) {
+    const list = document.getElementById('newsList');
+    if (!items || items.length === 0) {
+      list.innerHTML = `<div class="news-card"><div class="news-body"><h3 class="news-title">لا توجد أخبار مطابقة</h3><p class="news-desc">جرب البحث بكلمة أخرى أو اختر قسماً مختلفاً.</p></div></div>`;
+      return;
+    }
+    list.innerHTML = items.map((item, idx) => {
+      const img = item.image || item.tileImage || '';
+      const title = item.title || 'خبر فورت نايت';
+      const body = item.body || '';
+      const tag = item.tabTitle || 'تحديث';
+      const isSaved = savedArticles.some(s => s.title === title);
+
+      return `
+        <div class="news-card">
+          <div class="news-img-wrap" onclick="openArticle(${idx})">
+            <img src="${img}" loading="lazy" alt="">
+            <span class="news-tag">${tag}</span>
+          </div>
+          <div class="news-body">
+            <div onclick="openArticle(${idx})">
+              <h3 class="news-title">${title}</h3>
+              <p class="news-desc">${body}</p>
+            </div>
+            <div class="news-actions">
+              <button class="btn-sm ${isSaved ? 'saved' : ''}" onclick="toggleSave(${idx})">
+                ${isSaved ? '★ محفوظ' : '☆ حفظ'}
+              </button>
+              <button class="btn-sm" onclick="shareArticle(${idx})">📤 مشاركة</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function openArticle(idx) {
+    nativeCall('hapticTap');
+    const item = allNewsItems[idx];
+    if (!item) return;
+    document.getElementById('modalImg').src = item.image || item.tileImage || '';
+    document.getElementById('modalTag').innerText = item.tabTitle || 'خبر حصري';
+    document.getElementById('modalTitle').innerText = item.title || '';
+    document.getElementById('modalBody').innerText = item.body || '';
+    document.getElementById('modalShareBtn').onclick = () => shareArticle(idx);
+    document.getElementById('articleModal').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('articleModal').classList.remove('open');
+  }
+
+  function handleAndroidBack() {
+    if (document.getElementById('articleModal').classList.contains('open')) {
+      closeModal();
+      return "true";
+    }
+    return "false";
+  }
+
+  function toggleSave(idx) {
+    nativeCall('hapticTap');
+    const item = allNewsItems[idx];
+    if (!item) return;
+    const exists = savedArticles.findIndex(s => s.title === item.title);
+    if (exists >= 0) {
+      savedArticles.splice(exists, 1);
+    } else {
+      savedArticles.unshift({
+        title: item.title,
+        body: item.body,
+        image: item.image || item.tileImage || '',
+        tabTitle: item.tabTitle || 'محفوظ'
+      });
+    }
+    localStorage.setItem('fn_saved_articles', JSON.stringify(savedArticles));
+    renderNews(allNewsItems);
+  }
+
+  function renderSaved() {
+    const box = document.getElementById('savedList');
+    if (savedArticles.length === 0) {
+      box.innerHTML = `<div class="news-card"><div class="news-body"><h3 class="news-title">القائمة فارغة</h3><p class="news-desc">اضغط على زر "حفظ" في أي خبر لقراءته لاحقاً بدون إنترنت.</p></div></div>`;
+      return;
+    }
+    box.innerHTML = savedArticles.map((item, idx) => `
+      <div class="news-card">
+        <div class="news-img-wrap">
+          <img src="${item.image}" loading="lazy" alt="">
+          <span class="news-tag">${item.tabTitle}</span>
+        </div>
+        <div class="news-body">
+          <h3 class="news-title">${item.title}</h3>
+          <p class="news-desc">${item.body}</p>
+          <div class="news-actions">
+            <button class="btn-sm saved" onclick="removeSaved(${idx})">🗑️ إزالة</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function removeSaved(idx) {
+    nativeCall('hapticTap');
+    savedArticles.splice(idx, 1);
+    localStorage.setItem('fn_saved_articles', JSON.stringify(savedArticles));
+    renderSaved();
+  }
+
+  function shareArticle(idx) {
+    const item = allNewsItems[idx];
+    if (item) nativeCall('shareText', item.title || '', item.body || '');
+  }
+
+  async function fetchShop() {
+    const grid = document.getElementById('shopGrid');
+    try {
+      const res = await fetch(`https://fortnite-api.com/v2/shop?language=${currentLang}`);
+      const json = await res.json();
+      let entries = [];
+      if (json.status === 200 && json.data && json.data.entries) {
+        entries = json.data.entries.slice(0, 16);
+      }
+      if (entries.length === 0) throw new Error();
+
+      grid.innerHTML = entries.map(entry => {
+        const brItem = (entry.brItems && entry.brItems[0]) ? entry.brItems[0] : null;
+        const name = brItem ? brItem.name : (entry.devName || 'حزمة مميزة');
+        const img = (entry.newDisplayAsset && entry.newDisplayAsset.materialInstances && entry.newDisplayAsset.materialInstances[0] && entry.newDisplayAsset.materialInstances[0].images)
+          ? entry.newDisplayAsset.materialInstances[0].images.Background
+          : (brItem && brItem.images ? brItem.images.icon : '');
+        const price = entry.finalPrice || '---';
+
+        return `
+          <div class="shop-item">
+            <img src="${img}" loading="lazy" alt="">
+            <div class="shop-name">${name}</div>
+            <div class="shop-price">💎 ${price} V-Bucks</div>
+          </div>
+        `;
+      }).join('');
+    } catch (e) {
+      grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--muted); padding:20px;">جاري تحديث المتجر من السيرفر...</div>`;
+    }
+  }
+
+  function refreshAllData() {
+    fetchNews();
+    fetchShop();
+  }
+
+  // Initial Load
+  fetchNews();
+  fetchShop();
+</script>
+</body>
+</html>

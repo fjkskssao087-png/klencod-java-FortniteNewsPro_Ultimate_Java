@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+  body {
+    background: radial-gradient(circle at 50% 35%, #172554 0%, #070a12 65%, #03050a 100%);
+    height: 100vh; overflow: hidden; display: flex; flex-direction: column;
+    justify-content: space-between; align-items: center; color: #fff; padding: 48px 20px;
+  }
+  .grid-bg {
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(59,130,246,0.08) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(59,130,246,0.08) 1px, transparent 1px);
+    background-size: 36px 36px;
+    transform: perspective(500px) rotateX(60deg) translateY(100px) scale(2);
+    animation: gridMove 5s linear forwards;
+    z-index: 0;
+  }
+  @keyframes gridMove {
+    0% { background-position: 0 0; opacity: 0.2; }
+    50% { opacity: 0.6; }
+    100% { background-position: 0 360px; opacity: 0.3; }
+  }
+  .top-badge {
+    z-index: 2; padding: 6px 16px; border-radius: 99px;
+    background: rgba(59,130,246,0.15); border: 1px solid rgba(96,165,250,0.4);
+    font-size: 12px; letter-spacing: 2px; color: #93c5fd; font-weight: 800;
+    animation: fadeDown 0.8s ease-out;
+  }
+  .stage {
+    position: relative; z-index: 2; width: 100%; max-width: 360px; height: 220px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  /* Luxury Animated Supercar SVG (Octane / Whiplash Style) */
+  .car-wrap {
+    width: 300px;
+    animation: carDriveIn 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards, carHover 2.2s ease-in-out 1.4s infinite;
+    filter: drop-shadow(0 20px 25px rgba(59, 130, 246, 0.45));
+  }
+  @keyframes carDriveIn {
+    0% { transform: translateX(130%) scale(0.75) skewX(-12deg); opacity: 0; }
+    75% { transform: translateX(-6%) scale(1.03) skewX(3deg); opacity: 1; }
+    100% { transform: translateX(0) scale(1) skewX(0); opacity: 1; }
+  }
+  @keyframes carHover {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+  }
+  .wheel { transform-origin: center; animation: spin 0.45s linear infinite; }
+  @keyframes spin { 100% { transform: rotate(-360deg); } }
+  .nitro {
+    animation: nitroPulse 0.2s infinite alternate;
+    transform-origin: right center;
+  }
+  @keyframes nitroPulse {
+    0% { opacity: 0.6; transform: scaleX(0.85); }
+    100% { opacity: 1; transform: scaleX(1.25); }
+  }
+  .speed-lines {
+    position: absolute; width: 100%; height: 100%; pointer-events: none;
+  }
+  .line {
+    position: absolute; height: 2px; background: linear-gradient(90deg, transparent, #60a5fa, transparent);
+    border-radius: 2px; animation: streak 0.8s linear infinite;
+  }
+  @keyframes streak {
+    0% { transform: translateX(-120px); opacity: 0; }
+    50% { opacity: 0.9; }
+    100% { transform: translateX(350px); opacity: 0; }
+  }
+  .title-box {
+    text-align: center; z-index: 2; margin-top: 10px;
+    animation: fadeUp 1s ease-out 0.4s both;
+  }
+  .title-box h1 {
+    font-size: 32px; font-weight: 900; letter-spacing: 1px;
+    background: linear-gradient(90deg, #ffffff, #60a5fa, #c084fc, #f59e0b);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .title-box p { font-size: 13px; color: #94a3b8; margin-top: 6px; font-weight: 600; }
+  .progress-wrap {
+    width: 82%; max-width: 300px; z-index: 2; text-align: center;
+  }
+  .bar-bg {
+    width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 99px; overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+  }
+  .bar-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #f59e0b);
+    border-radius: 99px;
+    animation: load5s 4.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  @keyframes load5s {
+    0% { width: 0%; }
+    30% { width: 42%; }
+    70% { width: 81%; }
+    100% { width: 100%; }
+  }
+  .status-txt { margin-top: 10px; font-size: 12px; color: #cbd5e1; font-weight: 600; }
+  @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+  <div class="top-badge">ULTIMATE EDITION • 2026</div>
+
+  <div class="stage">
+    <div class="speed-lines">
+      <div class="line" style="top: 25%; width: 90px; animation-delay: 0s;"></div>
+      <div class="line" style="top: 55%; width: 130px; animation-delay: 0.3s;"></div>
+      <div class="line" style="top: 78%; width: 70px; animation-delay: 0.6s;"></div>
+    </div>
+
+    <!-- Custom Fortnite Whiplash / Octane Supercar SVG -->
+    <div class="car-wrap">
+      <svg viewBox="0 0 420 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="bodyGrad" x1="40" y1="40" x2="360" y2="110" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#3B82F6"/>
+            <stop offset="55%" stop-color="#6366F1"/>
+            <stop offset="100%" stop-color="#1E1B4B"/>
+          </linearGradient>
+          <linearGradient id="glassGrad" x1="140" y1="35" x2="250" y2="75" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#38BDF8"/>
+            <stop offset="100%" stop-color="#0F172A"/>
+          </linearGradient>
+          <linearGradient id="nitroGrad" x1="350" y1="85" x2="418" y2="85" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#F59E0B"/>
+            <stop offset="50%" stop-color="#38BDF8"/>
+            <stop offset="100%" stop-color="transparent"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Nitro Boost Flame -->
+        <path class="nitro" d="M352 78 L415 72 L392 84 L418 92 L352 92 Z" fill="url(#nitroGrad)"/>
+
+        <!-- Rear Spoiler -->
+        <path d="M328 54 L362 34 L374 38 L345 62 Z" fill="#F59E0B"/>
+
+        <!-- Main Supercar Chassis -->
+        <path d="M26 96 C26 82, 48 72, 95 66 L152 38 C176 30, 232 30, 268 44 L336 62 C354 67, 362 78, 360 96 L342 104 L42 104 Z" fill="url(#bodyGrad)" stroke="#93C5FD" stroke-width="2"/>
+
+        <!-- Neon Accent Stripe -->
+        <path d="M46 88 L346 84" stroke="#F59E0B" stroke-width="3.5" stroke-linecap="round"/>
+
+        <!-- Cockpit Windshield -->
+        <path d="M118 65 L158 43 C182 37, 224 37, 248 46 L274 63 Z" fill="url(#glassGrad)" stroke="#7DD3FC" stroke-width="1.5"/>
+
+        <!-- Headlight Glow -->
+        <path d="M34 84 L62 79 L54 88 Z" fill="#FEF08A"/>
+
+        <!-- Front Wheel -->
+        <g transform="translate(96, 102)">
+          <circle r="24" fill="#090D16" stroke="#38BDF8" stroke-width="3"/>
+          <circle r="13" fill="#1E293B" stroke="#F59E0B" stroke-width="2"/>
+          <circle r="4" fill="#FFFFFF"/>
+        </g>
+
+        <!-- Rear Wheel -->
+        <g transform="translate(294, 102)">
+          <circle r="26" fill="#090D16" stroke="#38BDF8" stroke-width="3"/>
+          <circle r="14" fill="#1E293B" stroke="#F59E0B" stroke-width="2"/>
+          <circle r="4" fill="#FFFFFF"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="title-box">
+      <h1>FORTNITE NEWS PRO</h1>
+      <p>أسرع منصة عربية لأخبار فورت نايت ومتجر العناصر</p>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="bar-bg"><div class="bar-fill"></div></div>
+    <div class="status-txt" id="statusText">جاري تهيئة المحرك والاتصال بالسيرفرات...</div>
+  </div>
+
+  <script>
+    const msgs = [
+      "جاري تهيئة المحرك والاتصال بالسيرفرات...",
+      "فحص حالة خوادم Epic Games المباشرة...",
+      "مزامنة الأخبار الحصرية ومتجر اليوم...",
+      "جاهز للانطلاق!"
+    ];
+    let i = 0;
+    setInterval(() => {
+      i++;
+      if (i < msgs.length) {
+        document.getElementById("statusText").innerText = msgs[i];
+      }
+    }, 1200);
+  </script>
+</body>
+</html>
